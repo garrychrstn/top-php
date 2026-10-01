@@ -2,14 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Database\DB;
+use App\Models\Customer;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class CustomerController
 {
-    private string $collection = 'customers';
-
     private function parseBody(Request $request): array
     {
         $body = $request->getParsedBody();
@@ -24,7 +22,7 @@ class CustomerController
     public function getAll(Request $request, Response $response): Response
     {
         try {
-            $customers = DB::find($this->collection);
+            $customers = Customer::all();
             $response->getBody()->write(json_encode($customers));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {
@@ -37,7 +35,7 @@ class CustomerController
     {
         try {
             $id = $args['id'] ?? '';
-            $customer = DB::findOne($this->collection, ['_id' => $id]);
+            $customer = Customer::find($id);
             
             if (!$customer) {
                 $response->getBody()->write(json_encode(['error' => 'Customer not found']));
@@ -62,18 +60,9 @@ class CustomerController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $data = [
-                'name' => $body['name'],
-                'phone' => $body['phone'] ?? '',
-                'address' => $body['address'] ?? '',
-                'created_at' => date('c'),
-                'updated_at' => date('c')
-            ];
+            $customer = Customer::create($body);
 
-            $id = DB::insert($this->collection, $data);
-            $data['id'] = $id;
-
-            $response->getBody()->write(json_encode($data));
+            $response->getBody()->write(json_encode($customer));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
@@ -87,22 +76,12 @@ class CustomerController
             $id = $args['id'] ?? '';
             $body = $this->parseBody($request);
 
-            $existing = DB::findOne($this->collection, ['_id' => $id]);
-            if (!$existing) {
+            $updated = Customer::update($id, $body);
+            if (!$updated) {
                 $response->getBody()->write(json_encode(['error' => 'Customer not found']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            $updateData = [
-                'name' => $body['name'] ?? $existing['name'],
-                'phone' => $body['phone'] ?? $existing['phone'],
-                'address' => $body['address'] ?? $existing['address'],
-                'updated_at' => date('c')
-            ];
-
-            DB::update($this->collection, ['_id' => $id], ['$set' => $updateData]);
-            
-            $updated = DB::findOne($this->collection, ['_id' => $id]);
             $response->getBody()->write(json_encode($updated));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {
@@ -115,15 +94,13 @@ class CustomerController
     {
         try {
             $id = $args['id'] ?? '';
-            $existing = DB::findOne($this->collection, ['_id' => $id]);
+            $success = Customer::delete($id);
             
-            if (!$existing) {
+            if (!$success) {
                 $response->getBody()->write(json_encode(['error' => 'Customer not found']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            DB::delete($this->collection, ['_id' => $id], true);
-            
             $response->getBody()->write(json_encode(['message' => 'Customer deleted successfully']));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {

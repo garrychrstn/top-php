@@ -1,0 +1,25 @@
+[Fri Oct  2 05:12:03 2026] PHP 8.5.11 Development Server (http://127.0.0.1:8000) started
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33984 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33984 [201]: POST /customers
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33984 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33986 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33986 [200]: GET /customers/6abedab4c40b411b27080432
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33986 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33998 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33998 [200]: PUT /customers/6abedab4c40b411b27080432
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:33998 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34006 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34006 [200]: DELETE /customers/6abedab4c40b411b27080432
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34006 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34010 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34010 [201]: POST /items
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34010 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34022 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34022 [200]: GET /items/6abedab4c40b411b27080433
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34022 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34038 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34038 [200]: PUT /items/6abedab4c40b411b27080433
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34038 Closing
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34050 Accepted
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34050 [200]: DELETE /items/6abedab4c40b411b27080433
+[Fri Oct  2 05:12:04 2026] 127.0.0.1:34050 Closing

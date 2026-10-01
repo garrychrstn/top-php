@@ -2,14 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Database\DB;
+use App\Models\Item;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class ItemController
 {
-    private string $collection = 'items';
-
     private function parseBody(Request $request): array
     {
         $body = $request->getParsedBody();
@@ -24,7 +22,7 @@ class ItemController
     public function getAll(Request $request, Response $response): Response
     {
         try {
-            $items = DB::find($this->collection);
+            $items = Item::all();
             $response->getBody()->write(json_encode($items));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {
@@ -37,7 +35,7 @@ class ItemController
     {
         try {
             $id = $args['id'] ?? '';
-            $item = DB::findOne($this->collection, ['_id' => $id]);
+            $item = Item::find($id);
             
             if (!$item) {
                 $response->getBody()->write(json_encode(['error' => 'Item not found']));
@@ -66,17 +64,9 @@ class ItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $data = [
-                'name' => $body['name'],
-                'price' => (float)$body['price'],
-                'created_at' => date('c'),
-                'updated_at' => date('c')
-            ];
+            $item = Item::create($body);
 
-            $id = DB::insert($this->collection, $data);
-            $data['id'] = $id;
-
-            $response->getBody()->write(json_encode($data));
+            $response->getBody()->write(json_encode($item));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
@@ -90,21 +80,12 @@ class ItemController
             $id = $args['id'] ?? '';
             $body = $this->parseBody($request);
 
-            $existing = DB::findOne($this->collection, ['_id' => $id]);
-            if (!$existing) {
+            $updated = Item::update($id, $body);
+            if (!$updated) {
                 $response->getBody()->write(json_encode(['error' => 'Item not found']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            $updateData = [
-                'name' => $body['name'] ?? $existing['name'],
-                'price' => isset($body['price']) && is_numeric($body['price']) ? (float)$body['price'] : $existing['price'],
-                'updated_at' => date('c')
-            ];
-
-            DB::update($this->collection, ['_id' => $id], ['$set' => $updateData]);
-            
-            $updated = DB::findOne($this->collection, ['_id' => $id]);
             $response->getBody()->write(json_encode($updated));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {
@@ -117,15 +98,13 @@ class ItemController
     {
         try {
             $id = $args['id'] ?? '';
-            $existing = DB::findOne($this->collection, ['_id' => $id]);
+            $success = Item::delete($id);
             
-            if (!$existing) {
+            if (!$success) {
                 $response->getBody()->write(json_encode(['error' => 'Item not found']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            DB::delete($this->collection, ['_id' => $id], true);
-            
             $response->getBody()->write(json_encode(['message' => 'Item deleted successfully']));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (\Exception $e) {
